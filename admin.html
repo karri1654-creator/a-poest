@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru" data-require-auth="true" data-require-role="admin">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель управления — А поесть?</title>
+  <meta name="description" content="Панель управления «А поесть?»: заказы за сегодня и меню кухни на Лесной.">
+  <script>
+    // Защита до отрисовки контента: только администратор с активной сессией.
+    (function () {
+      "use strict";
+      try {
+        if (!localStorage.getItem("apoest_user")) {
+          window.location.href = "auth.html";
+          return;
+        }
+        var raw = localStorage.getItem("apoest_user");
+        var user = raw ? JSON.parse(raw) : null;
+        if (!user || typeof user !== "object") {
+          window.location.href = "auth.html";
+          return;
+        }
+        var requiredRole = document.documentElement.getAttribute("data-require-role");
+        if (requiredRole === "admin") {
+          var role = String(user.role || "").toLowerCase();
+          if (user.isAdmin !== true && role !== "admin" && role !== "administrator") {
+            window.location.href = "auth.html";
+          }
+        }
+      } catch (error) {
+        window.location.href = "auth.html";
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-page">
+
+  <!-- ===== HEADER АДМИНКИ ===== -->
+  <header class="admin-header">
+    <div class="container admin-header__container">
+
+      <div class="admin-header__brand">
+        <a href="index.html" class="logo" aria-label="А поесть? — на главную">
+          <span class="logo__badge" aria-hidden="true">
+            <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 3v5.5M10 3v5.5M13 3v5.5M7 8.5h6M10 8.5V21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 3c-1.3 1.6-2 3.3-2 5 0 1.5.7 2.5 2 3v10" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="logo__text">А поесть?</span>
+        </a>
+
+        <span class="admin-header__divider" aria-hidden="true"></span>
+
+        <div class="admin-header__org">
+          <span class="admin-header__title">Панель управления</span>
+          <span class="admin-header__subtitle">Москва · кухня на Лесной</span>
+        </div>
+      </div>
+
+      <div class="admin-header__user">
+        <svg class="admin-header__user-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="10" cy="6.5" r="3" stroke="#4A4A4A" stroke-width="1.75"/>
+          <path d="M4.5 16c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5" stroke="#4A4A4A" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+        <span class="admin-header__name"></span>
+        <a href="auth.html" class="admin-header__logout" aria-label="Выйти из панели управления">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M11 3H5.5A1.5 1.5 0 0 0 4 4.5v11A1.5 1.5 0 0 0 5.5 17H11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 10h5m-2.5-3 3 3-3 3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===== ОСНОВНАЯ ЧАСТЬ ===== -->
+  <main class="admin-main">
+    <div class="container">
+
+      <div class="admin-top">
+        <div>
+          <h1 class="admin-title">Заказы и меню</h1>
+          <p class="admin-subtitle" id="adminToday">Кухня на Лесной</p>
+        </div>
+        <span class="admin-status">
+          <span class="admin-status__dot" aria-hidden="true"></span>
+          Кухня открыта
+        </span>
+      </div>
+
+      <nav class="admin-tabs" aria-label="Разделы панели управления">
+        <button class="admin-tab admin-tab--active" type="button" role="tab" aria-selected="true" data-admin-tab="orders">Заказы · <span id="adminOrdersTabCount">0</span></button>
+        <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="dishes">Блюда · <span id="adminDishesTabCount">0</span></button>
+        <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="tickets">Обращения · <span id="adminTicketsTabCount">0</span></button>
+        <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="settings">Настройки</button>
+        <div class="admin-tabs-summary" aria-label="Статистика проекта">
+          <span>Заказы <strong id="adminStatsOrders">0</strong></span>
+          <span>Выручка <strong id="adminStatsRevenue">0 ₽</strong></span>
+          <span>Блюда <strong id="adminStatsDishes">0</strong></span>
+          <span>Обращения <strong id="adminStatsTickets">0</strong></span>
+        </div>
+      </nav>
+
+      <section data-admin-panel="orders">
+        <div class="admin-orders">
+          <div class="admin-orders__head">
+            <h2 class="admin-orders__title" id="adminOrdersTitle">Все заказы</h2>
+            <label class="admin-select">
+              <select class="admin-select__field" id="adminStatusFilter" aria-label="Фильтр по статусу заказа">
+                <option value="all">Все статусы</option>
+                <option value="accepted">Принят</option>
+                <option value="cooking">Готовится</option>
+                <option value="on-way">В пути</option>
+                <option value="delivered">Доставлен</option>
+                <option value="cancelled">Отменён</option>
+              </select>
+              <svg class="admin-select__chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="m4.5 6 3.5 3.5L11.5 6" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </label>
+          </div>
+
+          <div class="admin-search">
+            <svg class="admin-search__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" stroke="#9E9E9E" stroke-width="1.75"/>
+              <path d="m12.5 12.5 4 4" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+            <input class="admin-search__input" id="adminSearch" type="search" placeholder="Номер заказа или имя клиента" aria-label="Поиск по номеру заказа или имени клиента">
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Заказ</th>
+                  <th scope="col">Клиент</th>
+                  <th scope="col">Состав</th>
+                  <th scope="col">Сумма</th>
+                  <th scope="col">Статус</th>
+                  <th scope="col"><span class="visually-hidden">Действия</span></th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersBody"></tbody>
+            </table>
+          </div>
+
+          <div class="admin-pagination">
+            <span class="admin-pagination__info" id="adminOrdersInfo">Показано 0 из 0 заказов</span>
+          </div>
+
+          <p class="admin-hint">
+            <span class="admin-hint__icon" aria-hidden="true">i</span>
+            Статус меняется прямо в строке заказа. Изменения сразу сохраняются в localStorage.
+          </p>
+        </div>
+      </section>
+
+      <section data-admin-panel="dishes" hidden>
+        <div class="admin-grid">
+          <div class="admin-orders">
+            <div class="admin-menu__head">
+              <h2 class="admin-orders__title">Меню кухни</h2>
+              <button class="admin-add-btn" id="adminAddDish" type="button">+ Добавить блюдо</button>
+            </div>
+            <div class="admin-dish-list" id="adminDishList"></div>
+          </div>
+
+          <aside class="admin-menu" aria-labelledby="adminDishTitle">
+            <div class="admin-edit-card">
+              <div class="admin-edit-card__label">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M11.2 2.6a1.7 1.7 0 0 1 2.4 2.4L5.4 13.2 2 14l.8-3.4 8.4-8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="m10.2 3.6 2.4 2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Редактирование
+              </div>
+              <h3 class="admin-edit-card__title" id="adminDishTitle">Блюдо в меню</h3>
+
+              <img src="assets/images/dish-1.jpg" alt="Блюдо" class="admin-edit-card__img" id="adminDishImage">
+
+              <div class="admin-photo-row">
+                <span class="admin-photo-link">
+                  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 6.5h2.5L7 4.5h6l1.5 2H17a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="10" cy="10.5" r="2.5" stroke="#4A4A4A" stroke-width="1.5"/>
+                  </svg>
+                  Фото блюда
+                </span>
+                <span class="admin-photo-hint">JPG, PNG · путь от корня</span>
+              </div>
+
+              <div class="admin-form">
+                <label class="admin-field">
+                  <span>Название блюда</span>
+                  <input id="adminDishName" type="text" autocomplete="off" placeholder="Боул с курицей">
+                </label>
+
+                <label class="admin-field">
+                  <span>Категория</span>
+                  <span class="admin-field__select-wrap">
+                    <select id="adminDishCategory">
+                      <option>Боулы</option>
+                      <option>Супы</option>
+                      <option>Паста</option>
+                      <option>Салаты</option>
+                      <option>Завтраки</option>
+                      <option>Пицца</option>
+                    </select>
+                    <svg class="admin-field__chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="m4.5 6 3.5 3.5L11.5 6" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </label>
+
+                <div class="admin-form__row">
+                  <label class="admin-field">
+                    <span>Цена, ₽</span>
+                    <input id="adminDishPrice" type="text" inputmode="numeric" autocomplete="off" placeholder="420">
+                  </label>
+                  <label class="admin-field">
+                    <span>Вес, г</span>
+                    <input id="adminDishWeight" type="text" inputmode="numeric" autocomplete="off" placeholder="350">
+                  </label>
+                </div>
+
+                <label class="admin-field">
+                  <span>Состав</span>
+                  <textarea id="adminDishComposition" rows="3" placeholder="Киноа, авокадо, овощи и соус тахини"></textarea>
+                </label>
+
+                <label class="admin-field">
+                  <span>Ссылка на фото</span>
+                  <input id="adminDishImg" type="text" autocomplete="off" placeholder="assets/images/dish-1.png">
+                </label>
+              </div>
+
+              <div class="admin-toggle-row">
+                <div>
+                  <div class="admin-toggle-row__title">Доступно к заказу</div>
+                  <div class="admin-toggle-row__text">Отображается в каталоге</div>
+                </div>
+                <span class="admin-switch" id="adminDishAvailable" role="switch" aria-checked="true" tabindex="0" aria-label="Доступно к заказу">
+                  <span class="admin-switch__knob"></span>
+                </span>
+              </div>
+
+              <button class="admin-save" id="adminDishSave" type="button">Сохранить изменения</button>
+              <button class="admin-cancel" id="adminDishCancel" type="button">Отменить</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section data-admin-panel="tickets" hidden>
+        <div class="admin-grid admin-grid--tickets">
+          <div class="admin-orders">
+            <div class="admin-orders__head">
+              <h2 class="admin-orders__title">Обращения покупателей</h2>
+              <span class="admin-tickets-info" id="adminTicketsInfo">0 обращений</span>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table admin-tickets-table">
+                <thead>
+                  <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Клиент</th>
+                    <th scope="col">Заказ</th>
+                    <th scope="col">Обращение</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Статус</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTicketsBody"></tbody>
+              </table>
+            </div>
+            <p class="admin-hint">
+              <span class="admin-hint__icon" aria-hidden="true">i</span>
+              Нажмите на обращение, чтобы прочитать вопрос и ответить. Ответ сразу появится в личном кабинете покупателя.
+            </p>
+          </div>
+
+          <aside class="admin-menu">
+            <div class="admin-edit-card" id="adminTicketCard">
+              <div class="admin-edit-card__label">Обращения</div>
+              <h3 class="admin-edit-card__title" id="adminTicketsTitle">Выберите обращение</h3>
+              <p class="admin-ticket-empty">Список обращений загружается…</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section data-admin-panel="settings" hidden>
+        <div class="admin-settings">
+          <h2 class="admin-orders__title">Настройки</h2>
+          <div class="admin-settings-grid">
+            <div class="admin-settings-card">
+              <h3 class="admin-settings-card__title">Настройки кухни</h3>
+              <div class="admin-settings-list">
+                <div class="admin-settings-row">
+                  <span>Режим работы</span>
+                  <strong>Ежедневно, 09:00–22:00</strong>
+                </div>
+                <div class="admin-settings-row">
+                  <span>Бесплатная доставка от</span>
+                  <strong id="adminFreeDelivery">900 ₽</strong>
+                </div>
+                <div class="admin-settings-row">
+                  <span>Адрес кухни</span>
+                  <strong>Москва, ул. Лесная, 12</strong>
+                </div>
+              </div>
+              <p class="admin-settings-hint">Параметры действуют для всех заказов и видны покупателям на сайте.</p>
+            </div>
+
+            <div class="admin-settings-card">
+              <h3 class="admin-settings-card__title">Данные проекта</h3>
+              <p>Все данные проекта — блюда, заказы, обращения, пользователи и адреса — хранятся в едином localStorage браузера. Изменения в панели сразу видны покупателям.</p>
+              <div class="admin-settings-stats" id="adminSettingsStats"></div>
+              <button class="admin-save admin-reset" id="adminResetData" type="button">Сбросить демо-данные к исходным</button>
+              <p class="admin-settings-hint">Очищает все ключи apoest_* и возвращает стартовые блюда, заказы, обращения и адреса.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER АДМИНКИ ===== -->
+  <footer class="admin-footer">
+    <div class="container admin-footer__container">
+      <div class="admin-footer__copy">© 2026 А поесть? · Панель управления</div>
+      <div class="admin-footer__right">
+        <a href="#" class="admin-footer__link" data-support-open>Поддержка</a>
+        <a href="tel:88005552424" class="admin-footer__tel">8 800 555-24-24</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

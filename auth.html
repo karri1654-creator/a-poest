@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — А поесть?</title>
+  <meta name="description" content="Вход и регистрация в сервисе «А поесть?»: заказывайте любимую еду по телефону или email.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+  <!-- ===== МИНИМАЛИСТИЧНАЯ ШАПКА ===== -->
+  <header class="auth-header">
+    <div class="container auth-header__container">
+      <a href="index.html" class="logo auth-header__logo" aria-label="На главную">
+        <span class="logo__badge" aria-hidden="true">
+          <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 3v5.5M10 3v5.5M13 3v5.5M7 8.5h6M10 8.5V21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 3c-1.3 1.6-2 3.3-2 5 0 1.5.7 2.5 2 3v10" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo__text">А поесть?</span>
+      </a>
+
+      <a href="index.html" class="auth-back">
+        <span class="auth-back__arrow" aria-hidden="true">←</span>
+        <span class="auth-back__full">Вернуться к меню</span>
+        <span class="auth-back__short">В меню</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ===== ФОРМА ВХОДА / РЕГИСТРАЦИИ ===== -->
+  <main class="auth-main">
+    <div class="container auth">
+
+      <section class="auth-card" data-auth-card data-auth-mode="login" aria-labelledby="authTitle">
+        <div class="auth-tabs" role="tablist" aria-label="Вход или регистрация">
+          <button class="auth-tab auth-tab--active" type="button" role="tab" aria-selected="true" aria-controls="authPanel" data-auth-tab="login">Вход</button>
+          <button class="auth-tab" type="button" role="tab" aria-selected="false" aria-controls="authPanel" data-auth-tab="register">Регистрация</button>
+        </div>
+
+        <div class="auth-card__head" id="authPanel">
+          <h1 class="auth-card__title" id="authTitle" data-auth-title>Вход в аккаунт</h1>
+          <p class="auth-card__subtitle" data-auth-subtitle>Введите данные, указанные при регистрации.</p>
+        </div>
+
+        <form class="auth-form" novalidate>
+          <label class="auth-field" for="authName" data-auth-name-field hidden>
+            <span class="auth-field__label">Ваше имя</span>
+            <input class="auth-field__input" id="authName" name="name" type="text" autocomplete="name" minlength="2" placeholder="Анна" data-auth-name>
+          </label>
+
+          <label class="auth-field" for="authPhone">
+            <span class="auth-field__label">Телефон или email</span>
+            <input class="auth-field__input" id="authPhone" name="phone" type="text" inputmode="email" autocomplete="username" placeholder="+7 (999) 123-45-67 или anna@apoest.ru" data-auth-login data-auth-phone>
+          </label>
+
+          <label class="auth-field" for="authPassword">
+            <span class="auth-field__label">Пароль</span>
+            <input class="auth-field__input" id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Минимум 6 символов" data-auth-password>
+          </label>
+
+          <label class="auth-field" for="authConfirm" data-auth-confirm-field hidden>
+            <span class="auth-field__label">Повторите пароль</span>
+            <input class="auth-field__input" id="authConfirm" name="confirm" type="password" autocomplete="new-password" minlength="6" placeholder="Повторите пароль" data-auth-confirm>
+          </label>
+
+          <button class="auth-submit" type="submit" data-auth-submit>Войти</button>
+        </form>
+
+        <p class="auth-error" data-auth-error role="alert" aria-live="assertive" hidden></p>
+        <p class="auth-success" data-auth-success role="status" aria-live="polite" hidden></p>
+
+        <div class="auth-demo" data-auth-demo>
+          <p class="auth-demo__title">Демо-доступ</p>
+          <p class="auth-demo__row"><span>Покупатель</span><strong>anna@apoest.ru</strong> / <strong>anna123</strong></p>
+          <p class="auth-demo__row"><span>Администратор</span><strong>admin@apoest.ru</strong> / <strong>admin123</strong></p>
+        </div>
+
+        <p class="auth-note" data-auth-note>Нажимая «Войти», вы соглашаетесь с <a href="#">условиями сервиса</a> и <a href="#">политикой конфиденциальности</a>.</p>
+
+        <p class="auth-switch">
+          <span data-auth-switch-text>Впервые у нас?</span>
+          <button class="auth-switch__link" type="button" data-auth-toggle>Зарегистрироваться</button>
+        </p>
+      </section>
+
+      <p class="auth-copy">© 2026 А поесть? · Еда на каждый день</p>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

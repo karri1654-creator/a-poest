@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>А поесть? — доставка еды</title>
+  <meta name="description" content="Доставка еды «А поесть?». Обед, который ждёшь. Доставим за 30–45 минут.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container header__container">
+
+      <!-- Мобильная строка: логотип + бургер -->
+      <div class="header__mobile-row">
+        <a href="index.html" class="header__logo logo" aria-label="Главная">
+          <span class="logo__badge" aria-hidden="true">
+            <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 3v5.5M10 3v5.5M13 3v5.5M7 8.5h6M10 8.5V21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 3c-1.3 1.6-2 3.3-2 5 0 1.5.7 2.5 2 3v10" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="logo__text">А поесть?</span>
+        </a>
+        <button class="header__burger" id="headerBurger" aria-label="Открыть меню" aria-expanded="false">
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+        </button>
+      </div>
+
+      <!-- Компактная плашка адреса (только мобильный вид) -->
+      <div class="header__addr-bar">
+        <svg class="addr__pin" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 14s5-4.4 5-8A5 5 0 0 0 3 6c0 3.6 5 8 5 8Z" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8" cy="6" r="1.8" stroke="#9E9E9E" stroke-width="1.75"/>
+        </svg>
+        <div class="addr__text">
+          <div class="addr__city-row">
+            <div class="addr__city">Москва, ул. Лесная, 12</div>
+            <svg class="addr__chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="m4.5 6 3.5 3.5L11.5 6" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="addr__time">Доставим за 30–45 мин</div>
+        </div>
+      </div>
+
+      <!-- Десктопная часть шапки -->
+      <div class="header__desktop">
+        <div class="header__left">
+          <a href="index.html" class="header__logo logo" aria-label="Главная">
+            <span class="logo__badge" aria-hidden="true">
+              <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 3v5.5M10 3v5.5M13 3v5.5M7 8.5h6M10 8.5V21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18 3c-1.3 1.6-2 3.3-2 5 0 1.5.7 2.5 2 3v10" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="logo__text">А поесть?</span>
+          </a>
+
+          <div class="header__address">
+            <button class="addr-btn" type="button" aria-expanded="false">
+              <svg class="addr-btn__pin" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 14s5-4.4 5-8A5 5 0 0 0 3 6c0 3.6 5 8 5 8Z" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="6" r="1.8" stroke="#9E9E9E" stroke-width="1.75"/>
+              </svg>
+              <div class="addr-btn__text">
+                <div class="addr-btn__city-row">
+                  <div class="addr-btn__city">Москва, ул. Лесная, 12</div>
+                  <svg class="addr-btn__chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="m4.5 6 3.5 3.5L11.5 6" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="addr-btn__time">Доставим за 30–45 минут</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <nav class="header__nav">
+          <a href="index.html" class="nav__link nav__link--active" aria-current="page">Главная</a>
+          <a href="catalog.html" class="nav__link">Каталог</a>
+        </nav>
+
+        <div class="header__right">
+          <div class="header__profile">
+            <a href="profile.html" class="profile-btn">
+              <svg class="profile-btn__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="10" cy="6.5" r="3" stroke="#1E1E1E" stroke-width="1.75"/>
+                <path d="M4.5 16c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5" stroke="#1E1E1E" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+              <span class="profile-btn__name">Войти</span>
+              <svg class="profile-btn__arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="m4.5 6 3.5 3.5L11.5 6" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+
+          <a href="catalog.html#cartWidget" class="header__cart cart-btn">
+            <svg class="cart-btn__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4.5 7h11l.9 8.5a1.5 1.5 0 0 1-1.5 1.7H5.1a1.5 1.5 0 0 1-1.5-1.7L4.5 7Z" stroke="#fff" stroke-width="1.75" stroke-linejoin="round"/>
+              <path d="M7.5 7V5.4a2.5 2.5 0 0 1 5 0V7" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+            <span class="cart-btn__label" id="headerCartLabel" aria-live="polite">1&nbsp;130&nbsp;₽ · 3</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="container hero__container">
+      <h1 class="hero__title">Что-нибудь вкусное?</h1>
+      <p class="hero__subtitle">Завтрак, обед или просто маленькая радость.</p>
+
+      <div class="hero__search">
+        <div class="hero__input-wrap">
+          <svg class="hero__input-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" stroke="#9E9E9E" stroke-width="1.75"/>
+            <path d="m12.5 12.5 4 4" stroke="#9E9E9E" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <input type="search" class="hero__input" id="searchInput" placeholder="Какое блюдо вам хочется?" autocomplete="off" aria-label="Поиск по меню">
+        </div>
+        <button class="hero__btn" type="button">Поиск по меню</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROMO ===== -->
+  <section class="promo">
+    <div class="container promo__container">
+      <div class="promo__content">
+        <span class="promo__badge">
+          <svg class="promo__badge-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M13.4 2.6C8.2 2.7 4.6 4.9 4.6 8.2c0 1.4.7 2.5 1.8 3.2 1.4-2.7 3.6-4.7 6.5-5.7-2.3 1.5-4.3 3.5-5.8 6.1 3.3.4 6.3-1.7 6.3-5.3V2.6Z" stroke="#4C8B59" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Свежий каждый день
+        </span>
+        <h2 class="promo__title">Обед, который ждёшь.</h2>
+        <p class="promo__text">Готовим из свежих продуктов. Привезём тёплым — осталось выбрать.</p>
+        <a href="catalog.html" class="promo__btn btn">→ Выбрать обед</a>
+      </div>
+      <div class="promo__images">
+        <img src="assets/images/banner.png" alt="Обед: тыквенный суп и боул с курицей" class="promo__img">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FILTERS ===== -->
+  <div class="container filters">
+    <div class="filters__list" role="tablist" aria-label="Фильтры меню">
+      <button class="filters__tab filters__tab--active" role="tab" aria-selected="true" data-filter="all">Все меню</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Боулы">Боулы</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Супы">Супы</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Паста">Паста</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Салаты">Салаты</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Завтраки">Завтраки</button>
+      <button class="filters__tab" role="tab" aria-selected="false" data-filter="Пицца">Пицца</button>
+    </div>
+  </div>
+
+  <!-- ===== CATALOG ===== -->
+  <section class="catalog">
+    <div class="container catalog__container">
+      <div class="catalog__header">
+        <h2 class="catalog__title">Любимые блюда</h2>
+        <a href="catalog.html" class="catalog__link">Всё меню →</a>
+      </div>
+
+      <div class="catalog__grid" id="homeCatalogGrid">
+        <!-- Карточка 1 -->
+        <article class="card" data-category="Боулы" data-price="420" data-id="bowl-chicken" data-name="Боул с курицей" data-grams="350 г" data-img="assets/images/dish-1.png">
+          <div class="card__badge">Хит</div>
+          <div class="card__media">
+            <img src="assets/images/dish-1.png" alt="Боул с курицей" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Боул с курицей</h3>
+            <p class="card__desc">Киноа, авокадо, огурец и соус тахини</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">350 г</span>
+                <span class="card__price">420 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="bowl-chicken" data-name="Боул с курицей" data-price="420" data-grams="350 г" data-img="assets/images/dish-1.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Карточка 2 -->
+        <article class="card" data-category="Супы" data-price="290" data-id="pumpkin-soup" data-name="Тыквенный суп" data-grams="300 г" data-img="assets/images/dish-6.png">
+          <div class="card__badge">Согревает</div>
+          <div class="card__media">
+            <img src="assets/images/dish-6.png" alt="Тыквенный суп" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Тыквенный суп</h3>
+            <p class="card__desc">Со сливками, семечками и хрустящими гренками</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">300 г</span>
+                <span class="card__price">290 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="pumpkin-soup" data-name="Тыквенный суп" data-price="290" data-grams="300 г" data-img="assets/images/dish-6.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Карточка 3 -->
+        <article class="card" data-category="Паста" data-price="390" data-id="tomato-pasta" data-name="Паста с томатами" data-grams="320 г" data-img="assets/images/dish-5.png">
+          <div class="card__media">
+            <img src="assets/images/dish-5.png" alt="Паста с томатами" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Паста с томатами</h3>
+            <p class="card__desc">Пенне, свежие томаты, базилик и пармезан</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">320 г</span>
+                <span class="card__price">390 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="tomato-pasta" data-name="Паста с томатами" data-price="390" data-grams="320 г" data-img="assets/images/dish-5.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Карточка 4 -->
+        <article class="card" data-category="Салаты" data-price="360" data-id="avocado-salad" data-name="Салат с авокадо" data-grams="240 г" data-img="assets/images/dish-4.png">
+          <div class="card__badge">Лёгкий выбор</div>
+          <div class="card__media">
+            <img src="assets/images/dish-4.png" alt="Салат с авокадо" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Салат с авокадо</h3>
+            <p class="card__desc">Свежая зелень, огурец и лимонная заправка</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">240 г</span>
+                <span class="card__price">360 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="avocado-salad" data-name="Салат с авокадо" data-price="360" data-grams="240 г" data-img="assets/images/dish-4.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Карточка 5 -->
+        <article class="card" data-category="Завтраки" data-price="320" data-id="syrniki-berries" data-name="Сырники с ягодами" data-grams="220 г" data-img="assets/images/dish-3.png">
+          <div class="card__media">
+            <img src="assets/images/dish-3.png" alt="Сырники с ягодами" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Сырники с ягодами</h3>
+            <p class="card__desc">Нежный творог, сметана и ягодный соус</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">220 г</span>
+                <span class="card__price">320 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="syrniki-berries" data-name="Сырники с ягодами" data-price="320" data-grams="220 г" data-img="assets/images/dish-3.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Карточка 6 -->
+        <article class="card" data-category="Пицца" data-price="540" data-id="pizza-margherita" data-name="Пицца Маргарита" data-grams="450 г" data-img="assets/images/dish-2.png">
+          <div class="card__media">
+            <img src="assets/images/dish-2.png" alt="Пицца Маргарита" class="card__img">
+          </div>
+          <div class="card__body">
+            <h3 class="card__title">Пицца Маргарита</h3>
+            <p class="card__desc">Моцарелла, томаты и свежий базилик</p>
+            <div class="card__footer">
+              <div class="card__price-row">
+                <span class="card__grams">450 г</span>
+                <span class="card__price">540 ₽</span>
+              </div>
+              <button class="card__btn btn-outline" type="button" data-cart data-id="pizza-margherita" data-name="Пицца Маргарита" data-price="540" data-grams="450 г" data-img="assets/images/dish-2.png">+ В корзину</button>
+            </div>
+          </div>
+        </article>
+      </div>
+      <p class="catalog__empty" id="catalogEmpty" hidden>По вашему запросу ничего не нашлось. Попробуйте другое блюдо.</p>
+    </div>
+  </section>
+
+  <!-- ===== INFO BAR ===== -->
+  <div class="info-bar">
+    <div class="container info-bar__container">
+      <div class="info-bar__text">
+        <svg class="info-bar__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="4.5" cy="13.5" r="2.5" stroke="#4C8B59" stroke-width="1.75"/>
+          <circle cx="15.5" cy="13.5" r="2.5" stroke="#4C8B59" stroke-width="1.75"/>
+          <path d="M4.5 13.5 8 7h4l3.5 6.5M8 7h4M10 7v6.5H4.5" stroke="#4C8B59" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Доставка за 30–45 минут. Бесплатно от 900 ₽
+      </div>
+      <div class="info-bar__time">Каждый день, 09:00–22:00</div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER (десктоп) ===== -->
+  <footer class="footer">
+    <div class="container footer__container">
+      <div class="footer__copy">© 2026 А поесть? · Еда на каждый день</div>
+      <div class="footer__right">
+        <button class="footer__link" type="button" data-support-open>Поддержка</button>
+        <a href="admin.html" class="footer__link">Админ-панель</a>
+        <a href="tel:88005552424" class="footer__tel">8 800 555-24-24</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== MOBILE TAB BAR ===== -->
+  <nav class="tab-bar" id="tabBar">
+    <a href="index.html" class="tab-bar__item tab-bar__item--active" aria-current="page">
+      <svg class="tab-bar__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3 9.5 10 3l7 6.5V17a1 1 0 0 1-1 1h-4v-5H8v5H4a1 1 0 0 1-1-1V9.5Z" stroke="#D96B27" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="tab-bar__label">Главная</span>
+    </a>
+    <a href="catalog.html" class="tab-bar__item">
+      <svg class="tab-bar__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="3" width="5.5" height="5.5" rx="1.2" stroke="#94A3B8" stroke-width="1.75"/>
+        <rect x="11.5" y="3" width="5.5" height="5.5" rx="1.2" stroke="#94A3B8" stroke-width="1.75"/>
+        <rect x="3" y="11.5" width="5.5" height="5.5" rx="1.2" stroke="#94A3B8" stroke-width="1.75"/>
+        <rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1.2" stroke="#94A3B8" stroke-width="1.75"/>
+      </svg>
+      <span class="tab-bar__label">Каталог</span>
+    </a>
+    <a href="catalog.html#cartWidget" class="tab-bar__item" id="tabCart" aria-label="Корзина, товаров: 3">
+      <span class="tab-bar__icon-wrap">
+        <svg class="tab-bar__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4.5 7h11l.9 8.5a1.5 1.5 0 0 1-1.5 1.7H5.1a1.5 1.5 0 0 1-1.5-1.7L4.5 7Z" stroke="#94A3B8" stroke-width="1.75" stroke-linejoin="round"/>
+          <path d="M7.5 7V5.4a2.5 2.5 0 0 1 5 0V7" stroke="#94A3B8" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+        <span class="tab-bar__badge" id="tabCartCount" aria-hidden="true">3</span>
+      </span>
+      <span class="tab-bar__label">Корзина</span>
+    </a>
+    <a href="profile.html" class="tab-bar__item">
+      <svg class="tab-bar__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="10" cy="6" r="3" stroke="#94A3B8" stroke-width="1.75"/>
+        <path d="M7 11c0-1.5 1.5-3 3-3s3 1.5 3 3" stroke="#94A3B8" stroke-width="1.75" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-bar__label">Профиль</span>
+    </a>
+  </nav>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -2,17 +2,15 @@ document.addEventListener('click', function (e) {
   const btn = e.target.closest('button, a');
   if (!btn) return;
   if (btn.textContent && btn.textContent.trim().includes('Оформить заказ')) {
-    const rawUser = localStorage.getItem('apoest_user');
-    let user = null;
-    try { user = JSON.parse(rawUser); } catch (err) {}
+    const user = window.ApoestStore ? window.ApoestStore.get('apoest_user', null) : null;
     if (!user || (!user.email && !user.phone && !user.name)) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      localStorage.setItem('apoest_redirect_after_auth', 'catalog.html');
+      if (window.ApoestStore) window.ApoestStore.set('apoest_redirect_after_auth', 'catalog.html');
 
       // Сохраняем уведомление, чтобы оно отобразилось на странице входа/регистрации.
       const notice = 'Войдите в аккаунт для оформления заказа';
-      localStorage.setItem('apoest_auth_notice', notice);
+      if (window.ApoestStore) window.ApoestStore.set('apoest_auth_notice', notice);
       let toast = document.getElementById('appToast');
       if (!toast) {
         toast = document.createElement('div');
@@ -30,7 +28,7 @@ document.addEventListener('click', function (e) {
 }, true);
 
 // ============================================================================
-// А поесть? — единая база localStorage и сквозной функционал сайта
+// А поесть? — единая база db.json и сквозной функционал сайта
 // ============================================================================
 
 (function () {
@@ -97,10 +95,12 @@ document.addEventListener('click', function (e) {
   const qs = (selector, root = document) => root.querySelector(selector);
   const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
+  var store = window.ApoestStore;
+
   function readJSON(key, fallback) {
     try {
-      const value = JSON.parse(localStorage.getItem(key) || "null");
-      return value === null || value === undefined ? fallback : value;
+      if (store) return store.get(key, fallback);
+      return fallback;
     } catch (error) {
       return fallback;
     }
@@ -108,15 +108,16 @@ document.addEventListener('click', function (e) {
 
   function writeJSON(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      if (store) store.set(key, value);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
   function readRaw(key) {
     try {
-      return localStorage.getItem(key);
+      if (store) return store.getRaw(key);
+      return null;
     } catch (error) {
       return null;
     }
@@ -124,17 +125,17 @@ document.addEventListener('click', function (e) {
 
   function writeRaw(key, value) {
     try {
-      localStorage.setItem(key, String(value));
+      if (store) store.set(key, value);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
   function removeKey(key) {
     try {
-      localStorage.removeItem(key);
+      if (store) store.remove(key);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
@@ -802,7 +803,7 @@ document.addEventListener('click', function (e) {
           const owner = isEmail ? `email-${email.replace(/[^a-z0-9]+/g, "-")}` : digits;
           const newUser = { name, phone, email, password, role: "user", isNew: true, owner };
           DB.saveUsers(users.concat(newUser));
-          localStorage.setItem(KEYS.user, JSON.stringify(newUser));
+          writeJSON(KEYS.user, newUser);
           adoptCart(newUser);
           removeKey(KEYS.activeOrder);
 
@@ -818,7 +819,7 @@ document.addEventListener('click', function (e) {
           return;
         }
 
-        localStorage.setItem(KEYS.user, JSON.stringify(found));
+        writeJSON(KEYS.user, found);
         adoptCart(found);
         authSuccess("Вы успешно вошли!");
         window.location.href = authDestination(found);
@@ -849,6 +850,13 @@ document.addEventListener('click', function (e) {
   let userPhone = currentUser ? String(currentUser.phone || "") : "";
   let currentOwner = currentUser ? DB.ownerOf(currentUser) : "guest";
 
+  function updateAdminOnlyUI() {
+    const isAdmin = !!(currentUser && isAdminUser(currentUser));
+    qsa("[data-admin-only]").forEach((node) => {
+      node.hidden = !isAdmin;
+    });
+  }
+
   function updateUserUI() {
     qsa(".profile-btn__name").forEach((node) => {
       node.textContent = currentUser ? userName : "Войти";
@@ -866,6 +874,8 @@ document.addEventListener('click', function (e) {
 
     const adminName = qs(".admin-header__name");
     if (adminName) adminName.textContent = `${currentUser ? userName : "Администратор"} · администратор`;
+
+    updateAdminOnlyUI();
   }
 
   updateUserUI();
@@ -1735,7 +1745,7 @@ document.addEventListener('click', function (e) {
   }
 
   function placeOrder() {
-    if (!localStorage.getItem("apoest_user")) {
+    if (!readJSON(KEYS.user, null)) {
       const notice = "Войдите в аккаунт для оформления заказа";
       writeRaw(KEYS.redirectAfterAuth, "catalog.html");
       writeRaw(KEYS.authNotice, notice);
@@ -1803,7 +1813,7 @@ document.addEventListener('click', function (e) {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    if (!localStorage.getItem("apoest_user")) {
+    if (!readJSON(KEYS.user, null)) {
       const notice = "Войдите в аккаунт для оформления заказа";
       writeRaw(KEYS.redirectAfterAuth, "catalog.html");
       writeRaw(KEYS.authNotice, notice);
@@ -1814,7 +1824,7 @@ document.addEventListener('click', function (e) {
 
     const currentUser = (() => {
       try {
-        return JSON.parse(localStorage.getItem("apoest_user"));
+        return readJSON(KEYS.user, null);
       } catch (error) {
         return null;
       }
@@ -1822,8 +1832,8 @@ document.addEventListener('click', function (e) {
 
     if (!currentUser) {
       showToast("Войдите в аккаунт для оформления заказа");
-      localStorage.setItem("apoest_redirect_after_auth", "catalog.html");
-      localStorage.setItem("apoest_auth_notice", "Войдите в аккаунт для оформления заказа");
+      writeRaw(KEYS.redirectAfterAuth, "catalog.html");
+      writeRaw(KEYS.authNotice, "Войдите в аккаунт для оформления заказа");
       window.location.href = "auth.html";
       return;
     }
@@ -2286,41 +2296,43 @@ document.addEventListener('click', function (e) {
     if (order) renderSuccessOrder(order);
   }
 
-  // Синхронизация между вкладками
-  window.addEventListener("storage", (event) => {
-    if (!event.key || !event.key.startsWith("apoest_")) return;
-    if (event.key === KEYS.cart || event.key === KEYS.cartOwner) {
-      cartItems = loadCart();
-      renderCart();
-    } else if (event.key === KEYS.orders || event.key === KEYS.activeOrder) {
-      if (document.body.classList.contains("profile-page")) renderProfileOrders();
-      if (document.body.classList.contains("success-page")) {
-        const order = readActiveOrder();
-        if (order) renderSuccessOrder(order);
+  // Синхронизация между вкладками/страницами (через db.json на сервере)
+  window.addEventListener("apoest:db-change", (e) => {
+    const keys = (e && e.detail && Array.isArray(e.detail.keys)) ? e.detail.keys : [];
+    keys.forEach((key) => {
+      if (key === KEYS.cart || key === KEYS.cartOwner) {
+        cartItems = loadCart();
+        renderCart();
+      } else if (key === KEYS.orders || key === KEYS.activeOrder) {
+        if (document.body.classList.contains("profile-page")) renderProfileOrders();
+        if (document.body.classList.contains("success-page")) {
+          const order = readActiveOrder();
+          if (order) renderSuccessOrder(order);
+        }
+        if (document.body.classList.contains("admin-page")) {
+          renderAdminOrders();
+          updateAdminCounts();
+        }
+      } else if (key === KEYS.dishes) {
+        applyHomeFilters();
+        applyCatalogFilters();
+        if (document.body.classList.contains("admin-page")) {
+          renderAdminDishList();
+          updateAdminCounts();
+        }
+      } else if (key === KEYS.tickets) {
+        renderSupportTickets();
+        if (document.body.classList.contains("admin-page")) {
+          renderAdminTickets();
+          updateAdminCounts();
+          updateAdminSettings();
+        }
+      } else if (key === KEYS.addresses || key === KEYS.activeAddress) {
+        updateAddressUI();
+      } else if (key === KEYS.user) {
+        window.location.reload();
       }
-      if (document.body.classList.contains("admin-page")) {
-        renderAdminOrders();
-        updateAdminCounts();
-      }
-    } else if (event.key === KEYS.dishes) {
-      applyHomeFilters();
-      applyCatalogFilters();
-      if (document.body.classList.contains("admin-page")) {
-        renderAdminDishList();
-        updateAdminCounts();
-      }
-    } else if (event.key === KEYS.tickets) {
-      renderSupportTickets();
-      if (document.body.classList.contains("admin-page")) {
-        renderAdminTickets();
-        updateAdminCounts();
-        updateAdminSettings();
-      }
-    } else if (event.key === KEYS.addresses || event.key === KEYS.activeAddress) {
-      updateAddressUI();
-    } else if (event.key === KEYS.user) {
-      window.location.reload();
-    }
+    });
   });
 
   // --------------------------------------------------------------------------
@@ -2823,12 +2835,15 @@ document.addEventListener('click', function (e) {
 
     el("adminResetData")?.addEventListener("click", () => {
       if (!window.confirm("Сбросить все данные сайта и вернуть демо-набор?")) return;
-      try {
-        Object.keys(localStorage)
-          .filter((key) => key.indexOf("apoest_") === 0)
-          .forEach((key) => removeKey(key));
-      } catch (error) {
-        Object.values(KEYS).forEach((key) => removeKey(key));
+      // Сброс демо-данных: очищаем db.json и перезагружаем — ensureSeedData восстановит данные.
+      if (window.ApoestStore) {
+        var snapshot = window.ApoestStore.snapshot();
+        Object.keys(snapshot || {}).forEach(function (key) {
+          if (key.indexOf("apoest_") === 0) window.ApoestStore.remove(key);
+        });
+        window.ApoestStore.saveNow();
+      } else {
+        Object.values(KEYS).forEach(function (key) { removeKey(key); });
       }
       window.location.reload();
     });

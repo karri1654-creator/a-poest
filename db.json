@@ -1,0 +1,467 @@
+{
+  "apoest_dishes": [
+    {
+      "id": "bowl-chicken",
+      "name": "Боул с курицей",
+      "category": "Боулы",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "diet": {
+        "noMeat": false,
+        "noGluten": false,
+        "noLactose": false
+      },
+      "price": 420,
+      "weight": "350 г",
+      "composition": "Киноа, авокадо, овощи и соус тахини",
+      "img": "assets/images/dish-1.png",
+      "badge": "Хит",
+      "isAvailable": true,
+      "popularity": 1
+    },
+    {
+      "id": "pumpkin-soup",
+      "name": "Тыквенный суп",
+      "category": "Супы",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "diet": {
+        "noMeat": true,
+        "noGluten": true,
+        "noLactose": true
+      },
+      "price": 290,
+      "weight": "300 г",
+      "composition": "Со сливками, семечками и хрустящим тостом",
+      "img": "assets/images/dish-6.png",
+      "badge": "Согревает",
+      "isAvailable": true,
+      "popularity": 2
+    },
+    {
+      "id": "tomato-pasta",
+      "name": "Паста с томатами",
+      "category": "Паста",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "diet": {
+        "noMeat": true,
+        "noGluten": true,
+        "noLactose": true
+      },
+      "price": 390,
+      "weight": "320 г",
+      "composition": "Пенне, спелые томаты, базилик и пармезан",
+      "img": "assets/images/dish-5.png",
+      "badge": "",
+      "isAvailable": true,
+      "popularity": 3
+    },
+    {
+      "id": "avocado-salad",
+      "name": "Салат с авокадо",
+      "category": "Салаты",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "diet": {
+        "noMeat": true,
+        "noGluten": false,
+        "noLactose": false
+      },
+      "price": 360,
+      "weight": "240 г",
+      "composition": "Свежая зелень, огурец и лимонная заправка",
+      "img": "assets/images/dish-4.png",
+      "badge": "Лёгкий выбор",
+      "isAvailable": true,
+      "popularity": 4
+    },
+    {
+      "id": "syrniki-berries",
+      "name": "Сырники с ягодами",
+      "category": "Завтраки",
+      "meals": [
+        "breakfast"
+      ],
+      "diet": {
+        "noMeat": true,
+        "noGluten": false,
+        "noLactose": false
+      },
+      "price": 320,
+      "weight": "220 г",
+      "composition": "Нежный творог, сметана и ягодный соус",
+      "img": "assets/images/dish-3.png",
+      "badge": "",
+      "isAvailable": true,
+      "popularity": 5
+    },
+    {
+      "id": "pizza-margherita",
+      "name": "Пицца Маргарита",
+      "category": "Пицца",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "diet": {
+        "noMeat": true,
+        "noGluten": false,
+        "noLactose": false
+      },
+      "price": 540,
+      "weight": "450 г",
+      "composition": "Моцарелла, томаты и свежий базилик",
+      "img": "assets/images/dish-2.png",
+      "badge": "",
+      "isAvailable": true,
+      "popularity": 6
+    }
+  ],
+  "apoest_orders": [
+    {
+      "id": "order-1049",
+      "number": 1049,
+      "owner": "mikhail",
+      "clientName": "Михаил К.",
+      "clientPhone": "+7 (925) 000-62-18",
+      "items": [
+        {
+          "id": "bowl-chicken",
+          "name": "Боул с курицей",
+          "price": 420,
+          "qty": 3,
+          "grams": "350 г",
+          "img": "assets/images/dish-1.png"
+        }
+      ],
+      "itemsTotal": 1260,
+      "deliveryCost": 0,
+      "total": 1260,
+      "status": "accepted",
+      "createdAt": "2026-11-23T11:48:00.000Z",
+      "dateLabel": "23 ноября, 11:48",
+      "etaFrom": "12:18",
+      "etaTo": "12:33",
+      "address": "Москва, ул. Мира, 24, кв. 8",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1048",
+      "number": 1048,
+      "owner": "anna",
+      "clientName": "Анна С.",
+      "clientPhone": "+7 (916) 123-45-67",
+      "items": [
+        {
+          "id": "bowl-chicken",
+          "name": "Боул с курицей",
+          "price": 420,
+          "qty": 2,
+          "grams": "350 г",
+          "img": "assets/images/dish-1.png"
+        },
+        {
+          "id": "pumpkin-soup",
+          "name": "Тыквенный суп",
+          "price": 290,
+          "qty": 1,
+          "grams": "300 г",
+          "img": "assets/images/dish-6.png"
+        }
+      ],
+      "itemsTotal": 1130,
+      "deliveryCost": 0,
+      "total": 1130,
+      "status": "cooking",
+      "createdAt": "2026-11-23T11:44:00.000Z",
+      "dateLabel": "23 ноября, 11:44",
+      "etaFrom": "12:14",
+      "etaTo": "12:29",
+      "address": "Москва, ул. Ленина, 12, кв. 45",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1047",
+      "number": 1047,
+      "owner": "ivan",
+      "clientName": "Иван П.",
+      "clientPhone": "+7 (903) 000-90-12",
+      "items": [
+        {
+          "id": "avocado-salad",
+          "name": "Салат с авокадо",
+          "price": 360,
+          "qty": 3,
+          "grams": "240 г",
+          "img": "assets/images/dish-4.png"
+        }
+      ],
+      "itemsTotal": 1080,
+      "deliveryCost": 0,
+      "total": 1080,
+      "status": "on-way",
+      "createdAt": "2026-11-23T11:25:00.000Z",
+      "dateLabel": "23 ноября, 11:25",
+      "etaFrom": "11:55",
+      "etaTo": "12:10",
+      "address": "Москва, ул. Садовая, 8, подъезд 3",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1046",
+      "number": 1046,
+      "owner": "maria",
+      "clientName": "Мария Л.",
+      "clientPhone": "+7 (926) 000-31-09",
+      "items": [
+        {
+          "id": "pizza-margherita",
+          "name": "Пицца Маргарита",
+          "price": 540,
+          "qty": 2,
+          "grams": "450 г",
+          "img": "assets/images/dish-2.png"
+        }
+      ],
+      "itemsTotal": 1080,
+      "deliveryCost": 0,
+      "total": 1080,
+      "status": "delivered",
+      "createdAt": "2026-11-23T11:00:00.000Z",
+      "dateLabel": "23 ноября, 11:00",
+      "etaFrom": "11:30",
+      "etaTo": "11:45",
+      "address": "Москва, Ленинградский пр-т, 15, кв. 22",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1045",
+      "number": 1045,
+      "owner": "oleg",
+      "clientName": "Олег Т.",
+      "clientPhone": "+7 (985) 000-84-22",
+      "items": [
+        {
+          "id": "tomato-pasta",
+          "name": "Паста с томатами",
+          "price": 390,
+          "qty": 3,
+          "grams": "320 г",
+          "img": "assets/images/dish-5.png"
+        }
+      ],
+      "itemsTotal": 1170,
+      "deliveryCost": 0,
+      "total": 1170,
+      "status": "cancelled",
+      "createdAt": "2026-11-23T10:35:00.000Z",
+      "dateLabel": "23 ноября, 10:35",
+      "etaFrom": "11:05",
+      "etaTo": "11:20",
+      "address": "Москва, ул. Тверская, 7, кв. 3",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1041",
+      "number": 1041,
+      "owner": "anna",
+      "clientName": "Анна С.",
+      "clientPhone": "+7 (916) 123-45-67",
+      "items": [
+        {
+          "id": "bowl-chicken",
+          "name": "Боул с курицей",
+          "price": 420,
+          "qty": 1,
+          "grams": "350 г",
+          "img": "assets/images/dish-1.png"
+        },
+        {
+          "id": "avocado-salad",
+          "name": "Салат с авокадо",
+          "price": 360,
+          "qty": 1,
+          "grams": "240 г",
+          "img": "assets/images/dish-4.png"
+        },
+        {
+          "id": "syrniki-berries",
+          "name": "Сырники с ягодами",
+          "price": 320,
+          "qty": 1,
+          "grams": "220 г",
+          "img": "assets/images/dish-3.png"
+        }
+      ],
+      "itemsTotal": 1100,
+      "deliveryCost": 0,
+      "total": 1100,
+      "status": "delivered",
+      "createdAt": "2026-11-20T12:10:00.000Z",
+      "dateLabel": "20 ноября, 12:10",
+      "etaFrom": "12:40",
+      "etaTo": "12:55",
+      "address": "Москва, ул. Ленина, 12, кв. 45",
+      "payment": "Карта •• 4242"
+    },
+    {
+      "id": "order-1033",
+      "number": 1033,
+      "owner": "anna",
+      "clientName": "Анна С.",
+      "clientPhone": "+7 (916) 123-45-67",
+      "items": [
+        {
+          "id": "pizza-margherita",
+          "name": "Пицца Маргарита",
+          "price": 540,
+          "qty": 2,
+          "grams": "450 г",
+          "img": "assets/images/dish-2.png"
+        }
+      ],
+      "itemsTotal": 1080,
+      "deliveryCost": 0,
+      "total": 1080,
+      "status": "delivered",
+      "createdAt": "2026-11-16T18:45:00.000Z",
+      "dateLabel": "16 ноября, 18:45",
+      "etaFrom": "19:15",
+      "etaTo": "19:30",
+      "address": "Москва, ул. Ленина, 12, кв. 45",
+      "payment": "Карта •• 4242"
+    }
+  ],
+  "apoest_tickets": [
+    {
+      "id": "ticket-1049",
+      "userName": "Михаил К.",
+      "userPhone": "+7 (925) 000-62-18",
+      "orderNumber": 1049,
+      "message": "Можно добавить больше соуса тахини?",
+      "createdAt": "2026-11-23T11:51:00.000Z",
+      "status": "Новое",
+      "adminReply": ""
+    },
+    {
+      "id": "ticket-1046",
+      "userName": "Мария Л.",
+      "userPhone": "+7 (926) 000-31-09",
+      "orderNumber": 1046,
+      "message": "Пицца приехала холодной, пришлось греть. Можно в следующий раз упаковать её в термопакет?",
+      "createdAt": "2026-11-23T11:05:00.000Z",
+      "status": "Отвечено",
+      "adminReply": "Здравствуйте, Мария! Спасибо за отзыв. Передали кухне и курьерам — в следующий раз обязательно упакуем."
+    }
+  ],
+  "apoest_registered_users": [
+    {
+      "name": "Анна",
+      "phone": "+7 (916) 123-45-67",
+      "email": "anna@apoest.ru",
+      "password": "anna123",
+      "role": "user",
+      "isNew": false,
+      "owner": "anna"
+    },
+    {
+      "name": "Администратор",
+      "phone": "+7 (900) 000-00-01",
+      "email": "admin@apoest.ru",
+      "password": "admin123",
+      "role": "admin",
+      "isNew": false,
+      "owner": "admin"
+    }
+  ],
+  "apoest_user": null,
+  "apoest_addresses": [
+    {
+      "id": "addr-home",
+      "label": "Дом",
+      "city": "Москва",
+      "street": "ул. Ленина",
+      "house": "12",
+      "flat": "45",
+      "owner": "anna",
+      "isDefault": true
+    },
+    {
+      "id": "addr-work",
+      "label": "Работа",
+      "city": "Москва",
+      "street": "ул. Садовая",
+      "house": "8",
+      "flat": "офис 3",
+      "owner": "anna",
+      "isDefault": false
+    }
+  ],
+  "apoest_active_address": "addr-home",
+  "apoest_cart": [
+    {
+      "id": "bowl-chicken",
+      "name": "Боул с курицей",
+      "price": 420,
+      "qty": 2,
+      "grams": "350 г",
+      "img": "assets/images/dish-1.png"
+    },
+    {
+      "id": "pumpkin-soup",
+      "name": "Тыквенный суп",
+      "price": 290,
+      "qty": 1,
+      "grams": "300 г",
+      "img": "assets/images/dish-6.png"
+    }
+  ],
+  "apoest_cart_owner": "anna",
+  "apoest_active_order": {
+    "id": "order-1048",
+    "number": 1048,
+    "owner": "anna",
+    "clientName": "Анна С.",
+    "clientPhone": "+7 (916) 123-45-67",
+    "items": [
+      {
+        "id": "bowl-chicken",
+        "name": "Боул с курицей",
+        "price": 420,
+        "qty": 2,
+        "grams": "350 г",
+        "img": "assets/images/dish-1.png"
+      },
+      {
+        "id": "pumpkin-soup",
+        "name": "Тыквенный суп",
+        "price": 290,
+        "qty": 1,
+        "grams": "300 г",
+        "img": "assets/images/dish-6.png"
+      }
+    ],
+    "itemsTotal": 1130,
+    "deliveryCost": 0,
+    "total": 1130,
+    "status": "cooking",
+    "createdAt": "2026-11-23T11:44:00.000Z",
+    "dateLabel": "23 ноября, 11:44",
+    "etaFrom": "12:14",
+    "etaTo": "12:29",
+    "address": "Москва, ул. Ленина, 12, кв. 45",
+    "payment": "Карта •• 4242"
+  },
+  "apoest_redirect_after_auth": null,
+  "apoest_auth_notice": null,
+  "apoest_initialized": "1"
+}

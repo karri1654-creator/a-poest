@@ -5,17 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Панель управления — А поесть?</title>
   <meta name="description" content="Панель управления «А поесть?»: заказы за сегодня и меню кухни на Лесной.">
+  <script src="js/store.js"></script>
   <script>
     // Защита до отрисовки контента: только администратор с активной сессией.
     (function () {
       "use strict";
       try {
-        if (!localStorage.getItem("apoest_user")) {
-          window.location.href = "auth.html";
-          return;
-        }
-        var raw = localStorage.getItem("apoest_user");
-        var user = raw ? JSON.parse(raw) : null;
+        var user = window.ApoestStore ? ApoestStore.get("apoest_user", null) : null;
         if (!user || typeof user !== "object") {
           window.location.href = "auth.html";
           return;
@@ -156,7 +152,7 @@
 
           <p class="admin-hint">
             <span class="admin-hint__icon" aria-hidden="true">i</span>
-            Статус меняется прямо в строке заказа. Изменения сразу сохраняются в localStorage.
+            Статус меняется прямо в строке заказа. Изменения сразу сохраняются в базе данных db.json.
           </p>
         </div>
       </section>
@@ -320,7 +316,7 @@
 
             <div class="admin-settings-card">
               <h3 class="admin-settings-card__title">Данные проекта</h3>
-              <p>Все данные проекта — блюда, заказы, обращения, пользователи и адреса — хранятся в едином localStorage браузера. Изменения в панели сразу видны покупателям.</p>
+              <p>Все данные проекта — блюда, заказы, обращения, пользователи и адреса — хранятся в едином db.json браузера. Изменения в панели сразу видны покупателям.</p>
               <div class="admin-settings-stats" id="adminSettingsStats"></div>
               <button class="admin-save admin-reset" id="adminResetData" type="button">Сбросить демо-данные к исходным</button>
               <p class="admin-settings-hint">Очищает все ключи apoest_* и возвращает стартовые блюда, заказы, обращения и адреса.</p>

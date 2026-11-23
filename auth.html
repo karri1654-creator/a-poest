@@ -56,7 +56,7 @@
 
           <label class="auth-field" for="authPhone">
             <span class="auth-field__label">Телефон или email</span>
-            <input class="auth-field__input" id="authPhone" name="phone" type="text" inputmode="email" autocomplete="username" placeholder="+7 (999) 123-45-67 или anna@apoest.ru" data-auth-login data-auth-phone>
+            <input class="auth-field__input" id="authPhone" name="phone" type="text" inputmode="email" autocomplete="username" placeholder="+7 (999) 123-45-67 или name@example.ru" data-auth-login data-auth-phone>
           </label>
 
           <label class="auth-field" for="authPassword">
@@ -75,13 +75,7 @@
         <p class="auth-error" data-auth-error role="alert" aria-live="assertive" hidden></p>
         <p class="auth-success" data-auth-success role="status" aria-live="polite" hidden></p>
 
-        <div class="auth-demo" data-auth-demo>
-          <p class="auth-demo__title">Демо-доступ</p>
-          <p class="auth-demo__row"><span>Покупатель</span><strong>anna@apoest.ru</strong> / <strong>anna123</strong></p>
-          <p class="auth-demo__row"><span>Администратор</span><strong>admin@apoest.ru</strong> / <strong>admin123</strong></p>
-        </div>
-
-        <p class="auth-note" data-auth-note>Нажимая «Войти», вы соглашаетесь с <a href="#">условиями сервиса</a> и <a href="#">политикой конфиденциальности</a>.</p>
+<p class="auth-note" data-auth-note>Нажимая «Войти», вы соглашаетесь с <a href="#">условиями сервиса</a> и <a href="#">политикой конфиденциальности</a>.</p>
 
         <p class="auth-switch">
           <span data-auth-switch-text>Впервые у нас?</span>
@@ -93,6 +87,7 @@
     </div>
   </main>
 
+  <script src="js/store.js"></script>
   <script src="js/main.js"></script>
   <script src="js/auth.js"></script>
 </body>

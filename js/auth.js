@@ -1,5 +1,5 @@
 // ============================================================================
-// А поесть? — регистрация и авторизация по данным из localStorage
+// А поесть? — регистрация и авторизация по данным из db.json
 // ============================================================================
 
 (function () {
@@ -60,7 +60,6 @@
   const tabs = Array.from(card.querySelectorAll("[data-auth-tab]"));
   const errorBox = card.querySelector("[data-auth-error]");
   const successBox = card.querySelector("[data-auth-success]");
-  const demoBox = card.querySelector("[data-auth-demo]");
   const note = card.querySelector("[data-auth-note]");
   const form = card.querySelector(".auth-form");
 
@@ -89,7 +88,7 @@
   let submitting = false;
 
   // --------------------------------------------------------------------------
-  // Утилиты и работа с localStorage
+  // Утилиты и работа с db.json
   // --------------------------------------------------------------------------
   function normalizePhone(value) {
     const digits = String(value || "").replace(/\D/g, "");
@@ -108,10 +107,12 @@
     return `+7 (${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 8)}-${value.slice(8, 10)}`;
   }
 
+  var store = window.ApoestStore;
+
   function readJSON(key, fallback) {
     try {
-      const value = JSON.parse(localStorage.getItem(key) || "null");
-      return value === null || value === undefined ? fallback : value;
+      if (store) return store.get(key, fallback);
+      return fallback;
     } catch (error) {
       return fallback;
     }
@@ -119,23 +120,24 @@
 
   function writeJSON(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      if (store) store.set(key, value);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
   function removeKey(key) {
     try {
-      localStorage.removeItem(key);
+      if (store) store.remove(key);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
   function readRaw(key) {
     try {
-      return localStorage.getItem(key);
+      if (store) return store.getRaw(key);
+      return null;
     } catch (error) {
       return null;
     }
@@ -143,9 +145,9 @@
 
   function writeRaw(key, value) {
     try {
-      localStorage.setItem(key, String(value));
+      if (store) store.set(key, value);
     } catch (error) {
-      // localStorage может быть недоступен
+      // storage may be unavailable
     }
   }
 
@@ -349,7 +351,6 @@
     if (note) note.innerHTML = data.note;
     if (nameField) nameField.hidden = mode !== "register";
     if (confirmField) confirmField.hidden = mode !== "register";
-    if (demoBox) demoBox.hidden = mode !== "login";
     tabs.forEach((tab) => {
       const active = tab.dataset.authTab === mode;
       tab.classList.toggle("auth-tab--active", active);
@@ -384,13 +385,13 @@
 
   // Сообщение, с которым пользователя отправили на вход с другой страницы.
   try {
-    const pendingNotice = localStorage.getItem(NOTICE_KEY);
+    const pendingNotice = readRaw(NOTICE_KEY);
     if (pendingNotice) {
       showError(pendingNotice);
-      localStorage.removeItem(NOTICE_KEY);
+      removeKey(NOTICE_KEY);
     }
   } catch (error) {
-    // localStorage может быть недоступен
+    // db.json может быть недоступен
   }
 
   toggle?.addEventListener("click", () => {
@@ -517,7 +518,7 @@
       return;
     }
 
-    localStorage.setItem(USER_KEY, JSON.stringify(found));
+    writeJSON(USER_KEY, found);
     adoptGuestCart(found);
     window.location.href = resolveDestination(found);
   });

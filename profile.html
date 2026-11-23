@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru" data-require-auth="true">
 <head>
-  <script>if (!localStorage.getItem('apoest_user')) { window.location.replace('auth.html'); }</script>
+  <script src="js/store.js"></script>
+  <script>
+    (function () {
+      try {
+        if (!window.ApoestStore || !ApoestStore.get('apoest_user', null)) {
+          window.location.replace('auth.html');
+        }
+      } catch (e) {
+        window.location.replace('auth.html');
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Личный кабинет — А поесть?</title>
@@ -148,7 +159,7 @@
               <span>Настройки профиля</span>
             </button>
 
-            <a href="admin.html" class="profile-menu__item">
+            <a href="admin.html" class="profile-menu__item" data-admin-only hidden>
               <svg class="profile-menu__icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M10 2.8 16 5v4.4c0 3.5-2.4 6.4-6 7.8-3.6-1.4-6-4.3-6-7.8V5l6-2.2Z" stroke="#8A8A8A" stroke-width="1.75" stroke-linejoin="round"/>
                 <path d="m7.4 9.8 1.8 1.8 3.4-3.6" stroke="#8A8A8A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -228,7 +239,7 @@
       <div class="footer__copy">© 2026 А поесть? · Еда на каждый день</div>
       <div class="footer__right">
         <button class="footer__link" type="button" data-support-open>Поддержка</button>
-        <a href="admin.html" class="footer__link">Админ-панель</a>
+        <a href="admin.html" class="footer__link" data-admin-only hidden>Админ-панель</a>
         <a href="tel:88005552424" class="footer__tel">8 800 555-24-24</a>
       </div>
     </div>

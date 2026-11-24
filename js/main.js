@@ -2,7 +2,17 @@ document.addEventListener('click', function (e) {
   const btn = e.target.closest('button, a');
   if (!btn) return;
   if (btn.textContent && btn.textContent.trim().includes('Оформить заказ')) {
-    const user = window.ApoestStore ? window.ApoestStore.get('apoest_user', null) : null;
+    let user = window.ApoestStore ? window.ApoestStore.get('apoest_user', null) : null;
+    if (!user || (!user.email && !user.phone && !user.name)) {
+      try {
+        const mirrored = JSON.parse(sessionStorage.getItem('apoest_user') || 'null');
+        if (mirrored && typeof mirrored === 'object' && (mirrored.email || mirrored.phone || mirrored.name)) {
+          user = mirrored;
+        }
+      } catch (error) {
+        // sessionStorage недоступен — считаем пользователя гостем.
+      }
+    }
     if (!user || (!user.email && !user.phone && !user.name)) {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -136,6 +146,87 @@ document.addEventListener('click', function (e) {
       if (store) store.remove(key);
     } catch (error) {
       // storage may be unavailable
+    }
+  }
+
+  // Зеркало сессии на случай, когда /api/db недоступен (открытие с диска,
+  // статический хостинг без Python-сервера). Переход между страницами
+  // sessionStorage переживает, поэтому кабинет не возвращает на auth.html.
+  function readSessionMirror() {
+    try {
+      const raw = window.sessionStorage?.getItem(KEYS.user);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeSessionMirror(session) {
+    try {
+      window.sessionStorage?.setItem(KEYS.user, JSON.stringify(session));
+    } catch (error) {
+      // sessionStorage может быть запрещён.
+    }
+  }
+
+  function clearSessionMirror() {
+    try {
+      window.sessionStorage?.removeItem(KEYS.user);
+    } catch (error) {
+      // sessionStorage может быть запрещён.
+    }
+  }
+
+  function forcePersist() {
+    try {
+      window.ApoestStore?.saveNow?.();
+    } catch (error) {
+      // Нет сервера — используем зеркало сессии.
+    }
+  }
+
+  function saveAuthSession(user) {
+    const session = {
+      name: String(user?.name || "Пользователь"),
+      phone: String(user?.phone || ""),
+      email: String(user?.email || ""),
+      owner: ownerOf(user),
+      role: isAdminUser(user) ? "admin" : "user",
+      isNew: user?.isNew === true
+    };
+    writeJSON(KEYS.user, session);
+    writeSessionMirror(session);
+    return session;
+  }
+
+  function resolveSession() {
+    const stored = DB.getUser();
+    if (stored && typeof stored === "object") return stored;
+    const mirrored = readSessionMirror();
+    if (mirrored && typeof mirrored === "object") {
+      writeJSON(KEYS.user, mirrored);
+      return mirrored;
+    }
+    return null;
+  }
+
+  // Переход выполняется синхронно и не зависит от ошибок хранилища/DOM.
+  function safeRedirect(destination) {
+    const target = String(destination || "profile.html");
+    try {
+      window.location.assign(target);
+      return;
+    } catch (error) {
+      // Пробуем альтернативные способы ниже.
+    }
+    try {
+      window.location.href = target;
+    } catch (error) {
+      try {
+        window.location.replace(target);
+      } catch (ignored) {
+        // Последняя попытка; больше ничего сделать нельзя.
+      }
     }
   }
 
@@ -727,9 +818,33 @@ document.addEventListener('click', function (e) {
       const authDestination = (user) => {
         const target = String(readRaw(KEYS.redirectAfterAuth) || "").trim();
         removeKey(KEYS.redirectAfterAuth);
-        const allowed = ["catalog.html", "index.html", "profile.html", "order-success.html", "admin.html"];
-        if (allowed.includes(target) && (target !== "admin.html" || isAdminUser(user))) return target;
-        return isAdminUser(user) ? "admin.html" : "profile.html";
+        // Администратор всегда уходит в панель, даже если сохранён другой адрес.
+        if (isAdminUser(user)) return "admin.html";
+        const allowed = ["catalog.html", "index.html", "profile.html", "order-success.html"];
+        return allowed.includes(target) ? target : "profile.html";
+      };
+      // Сессия сохраняется до перехода: db.json (синхронно) + sessionStorage.
+      // Никакого ожидания fetch('/api/db') — при отсутствии сервера переход
+      // всё равно выполняется, а кабинет дочитает сессию из зеркала.
+      const completeAuth = (user, message, options = {}) => {
+        let destination = isAdminUser(user) ? "admin.html" : "profile.html";
+        try {
+          const session = saveAuthSession(user);
+          adoptCart(session);
+          if (options.clearOrder) removeKey(KEYS.activeOrder);
+          destination = authDestination(session);
+          forcePersist();
+        } catch (error) {
+          // Не блокируем редирект при проблемах с хранилищем.
+        }
+        try {
+          authSuccess(message);
+        } catch (error) {
+          // Сообщение не должно мешать переходу.
+        }
+        const go = () => safeRedirect(destination);
+        if (options.delay) window.setTimeout(go, options.delay);
+        else go();
       };
       const findAuthUser = (value, list) => {
         const login = String(value || "").trim().toLowerCase();
@@ -803,13 +918,7 @@ document.addEventListener('click', function (e) {
           const owner = isEmail ? `email-${email.replace(/[^a-z0-9]+/g, "-")}` : digits;
           const newUser = { name, phone, email, password, role: "user", isNew: true, owner };
           DB.saveUsers(users.concat(newUser));
-          writeJSON(KEYS.user, newUser);
-          adoptCart(newUser);
-          removeKey(KEYS.activeOrder);
-
-          authSuccess("Регистрация прошла успешно!");
-          const destination = authDestination(newUser);
-          setTimeout(() => { window.location.href = destination; }, 700);
+          completeAuth(newUser, "Регистрация прошла успешно!", { clearOrder: true, delay: 700 });
           return;
         }
 
@@ -819,10 +928,7 @@ document.addEventListener('click', function (e) {
           return;
         }
 
-        writeJSON(KEYS.user, found);
-        adoptCart(found);
-        authSuccess("Вы успешно вошли!");
-        window.location.href = authDestination(found);
+        completeAuth(found, "Вы успешно вошли!", { delay: 350 });
       });
     }
     return;
@@ -831,14 +937,14 @@ document.addEventListener('click', function (e) {
   // --------------------------------------------------------------------------
   // Защита закрытых страниц
   // --------------------------------------------------------------------------
-  const sessionUser = DB.getUser();
+  const sessionUser = resolveSession();
   const isAdminPage = document.body.classList.contains("admin-page");
   const isProtectedPage = isAdminPage
     || document.body.classList.contains("profile-page")
     || document.body.classList.contains("success-page");
 
   if (isProtectedPage && (!sessionUser || (isAdminPage && !isAdminUser(sessionUser)))) {
-    window.location.href = "auth.html";
+    safeRedirect("auth.html");
     return;
   }
 
@@ -1347,7 +1453,7 @@ document.addEventListener('click', function (e) {
         owner: currentOwner,
         isNew: currentUser?.isNew === true
       };
-      DB.setUser(currentUser);
+      saveAuthSession(currentUser);
       userName = name;
       userPhone = formatted;
 
@@ -1985,8 +2091,10 @@ document.addEventListener('click', function (e) {
   function logout(event) {
     event.preventDefault();
     DB.clearUser();
+    clearSessionMirror();
     removeKey(KEYS.redirectAfterAuth);
-    window.location.href = "auth.html";
+    forcePersist();
+    safeRedirect("auth.html");
   }
 
   qsa("[data-profile-logout]").forEach((link) => {
@@ -2845,6 +2953,7 @@ document.addEventListener('click', function (e) {
       } else {
         Object.values(KEYS).forEach(function (key) { removeKey(key); });
       }
+      clearSessionMirror();
       window.location.reload();
     });
   }

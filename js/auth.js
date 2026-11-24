@@ -12,6 +12,9 @@
   const ORDER_KEY = "apoest_active_order";
   const REDIRECT_KEY = "apoest_redirect_after_auth";
   const NOTICE_KEY = "apoest_auth_notice";
+  // Зеркало сессии в sessionStorage: выживает переходы между страницами,
+  // даже если сайт открыт напрямую с диска и /api/db недоступен.
+  const SESSION_MIRROR_KEY = "apoest_user";
   const ANNA_PHONE = "9161234567";
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -148,6 +151,53 @@
       if (store) store.set(key, value);
     } catch (error) {
       // storage may be unavailable
+    }
+  }
+
+  function readSessionMirror() {
+    try {
+      const raw = window.sessionStorage?.getItem(SESSION_MIRROR_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeSessionMirror(session) {
+    try {
+      window.sessionStorage?.setItem(SESSION_MIRROR_KEY, JSON.stringify(session));
+    } catch (error) {
+      // Приватный режим может запрещать sessionStorage.
+    }
+  }
+
+  // Сбрасываем отложенную запись в db.json до перехода на другую страницу.
+  // fetch('/api/db') в store.js уже имеет catch и здесь не ожидается.
+  function forcePersist() {
+    try {
+      window.ApoestStore?.saveNow?.();
+    } catch (error) {
+      // Нет сервера — сессия останется в зеркале sessionStorage.
+    }
+  }
+
+  // Переход не должен зависеть от исключений в хранилище или DOM.
+  function safeRedirect(destination) {
+    const target = String(destination || "profile.html");
+    try {
+      window.location.assign(target);
+      return;
+    } catch (error) {
+      // Пробуем альтернативные способы ниже.
+    }
+    try {
+      window.location.href = target;
+    } catch (error) {
+      try {
+        window.location.replace(target);
+      } catch (ignored) {
+        // Последняя попытка; больше ничего сделать нельзя.
+      }
     }
   }
 
@@ -290,15 +340,41 @@
     const target = String(readRaw(REDIRECT_KEY) || "").trim();
     removeKey(REDIRECT_KEY);
 
-    const allowed = ["catalog.html", "index.html", "profile.html", "order-success.html", "admin.html"];
-    let destination = allowed.includes(target) ? target : "";
-    if (destination === "admin.html" && !isAdminUser(user)) destination = "";
-    if (!destination) destination = isAdminUser(user) ? "admin.html" : "profile.html";
-    return destination;
+    // Администратор всегда попадает в панель, даже если сохранён другой адрес.
+    if (isAdminUser(user)) return "admin.html";
+
+    const allowed = ["catalog.html", "index.html", "profile.html", "order-success.html"];
+    return allowed.includes(target) ? target : "profile.html";
   }
 
   function redirectToCabinet(user) {
-    window.location.href = isAdminUser(user) ? "admin.html" : "profile.html";
+    safeRedirect(resolveDestination(user));
+  }
+
+  // Единая точка успешного входа/регистрации: сессия сохраняется,
+  // сообщение показывается, а переход выполняется в любом случае.
+  function finishAuth(user, message, options = {}) {
+    let destination = isAdminUser(user) ? "admin.html" : "profile.html";
+    try {
+      const session = saveSession(user);
+      writeSessionMirror(session);
+      adoptGuestCart(session);
+      if (options.clearOrder) removeKey(ORDER_KEY);
+      destination = resolveDestination(session);
+      forcePersist();
+    } catch (error) {
+      // Даже при недоступном хранилище переход должен состояться.
+    }
+
+    try {
+      showSuccess(message);
+    } catch (error) {
+      // Ошибка отображения сообщения не блокирует редирект.
+    }
+
+    const go = () => safeRedirect(destination);
+    if (options.delay) window.setTimeout(go, options.delay);
+    else go();
   }
 
   // --------------------------------------------------------------------------
@@ -343,10 +419,12 @@
     const data = content[mode];
 
     card.dataset.authMode = mode;
-    title.textContent = data.title;
-    subtitle.textContent = data.subtitle;
-    switchText.textContent = data.switchText;
-    toggle.textContent = data.toggleLabel;
+    // Блок «ДЕМО-ДОСТУП» и часть подписей могли быть удалены из разметки,
+    // поэтому обращение к элементам обязательно проверяем.
+    if (title) title.textContent = data.title;
+    if (subtitle) subtitle.textContent = data.subtitle;
+    if (switchText) switchText.textContent = data.switchText;
+    if (toggle) toggle.textContent = data.toggleLabel;
     if (submitButton) submitButton.textContent = data.submitLabel;
     if (note) note.innerHTML = data.note;
     if (nameField) nameField.hidden = mode !== "register";
@@ -373,7 +451,14 @@
   // Старт: уже авторизованного пользователя сразу отправляем в кабинет
   // --------------------------------------------------------------------------
   const users = ensureRegistered();
-  const activeSession = normalizeActiveSession(users);
+  let activeSession = normalizeActiveSession(users);
+  if (!activeSession) {
+    const mirrored = readSessionMirror();
+    if (mirrored && typeof mirrored === "object") {
+      writeJSON(USER_KEY, mirrored);
+      activeSession = normalizeActiveSession(users);
+    }
+  }
 
   if (activeSession) {
     card.hidden = true;
@@ -485,22 +570,13 @@
       users.push(newUser);
       writeJSON(REGISTERED_KEY, users);
 
-      const session = saveSession(newUser);
-      adoptGuestCart(session);
-      removeKey(ORDER_KEY);
-
       submitting = true;
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.textContent = "Регистрация…";
       }
 
-      const destination = resolveDestination(session);
-      showSuccess("Регистрация прошла успешно!");
-
-      setTimeout(() => {
-        window.location.href = destination;
-      }, 1200);
+      finishAuth(newUser, "Регистрация прошла успешно!", { clearOrder: true, delay: 1200 });
       return;
     }
 
@@ -518,8 +594,6 @@
       return;
     }
 
-    writeJSON(USER_KEY, found);
-    adoptGuestCart(found);
-    window.location.href = resolveDestination(found);
+    finishAuth(found, "Вы успешно вошли!", { delay: 350 });
   });
 })();

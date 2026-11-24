@@ -2,12 +2,19 @@
   "use strict";
 
   var API_URL = "/api/db";
+  // При открытии файла напрямую (/api/db недоступен) не делаем бесполезные
+  // запросы — они только засорят консоль ошибками CORS/404.
+  var IS_FILE = !!(window.location && window.location.protocol === "file:");
   var saveTimer = null;
   var saving = false;
   var pendingSave = false;
   var db = {};
 
   function loadSync() {
+    if (IS_FILE) {
+      db = {};
+      return db;
+    }
     try {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", API_URL, false); // sync: ensures DB is ready before app scripts run
@@ -35,6 +42,7 @@
 
   function flushSave() {
     saveTimer = null;
+    if (IS_FILE) return;
     if (saving) {
       pendingSave = true;
       return;
@@ -66,6 +74,7 @@
   }
 
   function saveNow() {
+    if (IS_FILE) return false;
     if (saveTimer) {
       clearTimeout(saveTimer);
       saveTimer = null;
@@ -83,7 +92,23 @@
   }
 
   function get(key, fallback) {
-    if (!db || !Object.prototype.hasOwnProperty.call(db, key)) return fallback;
+    if (!db || !Object.prototype.hasOwnProperty.call(db, key)) {
+      // Без Python-сервера db.json пуст. Сессия, сохранённая при входе,
+      // лежит в sessionStorage — её должны видеть и встроенные проверки
+      // в <head> защищённых страниц до загрузки main.js.
+      if (key === "apoest_user") {
+        try {
+          var mirrored = window.sessionStorage && window.sessionStorage.getItem(key);
+          if (mirrored) {
+            var session = JSON.parse(mirrored);
+            if (session && typeof session === "object") return session;
+          }
+        } catch (e) {
+          //sessionStorage недоступен
+        }
+      }
+      return fallback;
+    }
     var value = db[key];
     return value === undefined || value === null ? fallback : value;
   }
@@ -159,6 +184,7 @@
   }
 
   function poll() {
+    if (IS_FILE) return;
     if (saving || saveTimer) return; // don't stomp local in-flight writes
     try {
       fetch(API_URL, { cache: "no-store", headers: { "Accept": "application/json" } })
